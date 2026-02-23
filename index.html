@@ -3,185 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MDT LEGON - ADVANCED COMMAND CENTER</title>
+    <title>MDT LEGON - COMMANDER SYSTEM</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #d4af37; --bg: #050505; --card: #111; --danger: #ff4444; --admin-bg: #2b0303; }
         
-        /* Efek Scanning Line */
         body::before {
             content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none;
+            z-index: 10; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
         body { font-family: 'JetBrains Mono', monospace; background: var(--bg); color: #e0e0e0; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Sidebar Mewah */
-        .sidebar { width: 280px; background: #000; border-right: 2px solid var(--gold); padding: 20px; display: flex; flex-direction: column; z-index: 3; box-shadow: 5px 0 15px rgba(212, 175, 55, 0.1); }
-        .logo-area { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 20px; margin-bottom: 25px; }
-        .logo-area h2 { font-family: 'Oswald', sans-serif; color: var(--gold); margin: 0; letter-spacing: 4px; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); font-size: 2rem; }
-        
-        .nav-item { padding: 15px; font-size: 0.85rem; color: #888; cursor: pointer; transition: 0.4s; border-left: 4px solid transparent; margin-bottom: 5px; }
-        .nav-item:hover, .nav-item.active { background: linear-gradient(90deg, rgba(212, 175, 55, 0.15), transparent); color: var(--gold); border-left: 4px solid var(--gold); text-shadow: 0 0 5px var(--gold); }
-        
-        /* Notif Badge */
-        .badge-notif { background: var(--danger); color: white; border-radius: 4px; padding: 2px 8px; font-size: 0.65rem; font-weight: bold; box-shadow: 0 0 10px var(--danger); }
+        /* Maintenance Overlay */
+        #mt-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; justify-content: center; align-items: center; text-align: center; }
+        .mt-box { border: 2px solid var(--danger); padding: 50px; background: rgba(255,0,0,0.05); box-shadow: 0 0 30px var(--danger); }
 
+        .sidebar { width: 280px; background: #000; border-right: 2px solid var(--gold); padding: 20px; display: flex; flex-direction: column; z-index: 5; }
+        .logo-area { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 20px; margin-bottom: 25px; }
+        .logo-area h2 { font-family: 'Oswald', sans-serif; color: var(--gold); margin: 0; letter-spacing: 4px; font-size: 2rem; }
+        
+        .nav-item { padding: 15px; font-size: 0.85rem; color: #888; cursor: pointer; transition: 0.4s; border-left: 4px solid transparent; }
+        .nav-item:hover, .nav-item.active { background: linear-gradient(90deg, rgba(212, 175, 55, 0.15), transparent); color: var(--gold); border-left: 4px solid var(--gold); }
+        
         .content { flex-grow: 1; padding: 40px; overflow-y: auto; z-index: 1; }
         
-        /* Admin Panel Mewah */
-        #adminPanel { display: none; background: var(--admin-bg); padding: 25px; border-radius: 8px; margin-bottom: 35px; border: 1px solid var(--danger); box-shadow: 0 0 20px rgba(255, 68, 68, 0.2); }
-        
+        /* Admin UI */
+        #adminPanel { display: none; background: var(--admin-bg); padding: 25px; border-radius: 8px; margin-bottom: 35px; border: 1px solid var(--danger); }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         input, textarea, select { width: 100%; background: #000; border: 1px solid #333; color: var(--gold); padding: 12px; margin: 8px 0; border-radius: 4px; font-family: inherit; }
-        input:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
         
-        .btn { padding: 15px; font-weight: 700; cursor: pointer; font-family: 'Oswald'; text-transform: uppercase; border: none; border-radius: 4px; transition: 0.3s; letter-spacing: 1px; }
-        .btn-save { background: var(--gold); color: #000; box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
-        .btn-save:hover { transform: scale(1.02); background: #f0c644; }
+        .btn { padding: 12px; font-weight: 700; cursor: pointer; font-family: 'Oswald'; text-transform: uppercase; border: none; border-radius: 4px; transition: 0.3s; }
+        .btn-save { background: var(--gold); color: #000; width: 100%; }
+        .btn-mt { background: var(--danger); color: white; margin-top: 10px; width: 100%; }
 
-        /* Tabel Pro */
         table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
-        th { color: var(--gold); padding: 15px; text-align: left; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 2px; border-bottom: 1px solid #333; }
-        tr { background: rgba(255, 255, 255, 0.02); transition: 0.3s; }
-        tr:hover { background: rgba(212, 175, 55, 0.05); transform: translateX(5px); }
-        td { padding: 15px; border-top: 1px solid #222; border-bottom: 1px solid #222; font-size: 0.8rem; }
-        
-        .update-footer { margin-top: 50px; font-size: 0.65rem; color: #444; border-top: 1px solid #222; padding-top: 20px; text-align: center; }
+        th { color: var(--gold); padding: 15px; text-align: left; font-size: 0.75rem; border-bottom: 1px solid #333; }
+        tr { background: rgba(255, 255, 255, 0.02); }
+        td { padding: 15px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <div class="logo-area"><h2>LEGON</h2><small style="letter-spacing: 3px; color: #555;">SECURITY SYSTEM</small></div>
-    
-    <div class="nav-item active" onclick="render('SEMUA')">📊 DASHBOARD CENTER</div>
-    <div class="nav-item" onclick="render('DAFTAR SP')">📜 RECORD SANKSI</div>
-    <div class="nav-item" onclick="render('KASUS BERJALAN')">
-        ⏱️ ACTIVE CASES 
-        <span id="notif-count" class="badge-notif" style="display:none">0</span>
+<div id="mt-screen">
+    <div class="mt-box">
+        <h1 style="font-family:'Oswald'; color:var(--danger); font-size: 3rem; margin:0;">SYSTEM MAINTENANCE</h1>
+        <p style="letter-spacing: 2px;">DATABASE SEDANG DI-UPDATE OLEH COMMANDER MAHENDRA</p>
+        <p style="color:#555; font-size: 0.7rem;">ESTIMASI SELESAI: 10-15 MENIT</p>
     </div>
-    <div class="nav-item" onclick="render('SIDAK LEGON')">🛡️ OPERATION SIDAK</div>
+</div>
 
-    <button class="btn" style="margin-top:auto; font-size:0.6rem; background:#111; color:#333; border: 1px solid #222;" onclick="loginAdmin()">COMMANDER LOGIN</button>
+<div class="sidebar">
+    <div class="logo-area"><h2>LEGON</h2><small>OFFICIAL MDT</small></div>
+    <div class="nav-item active" onclick="render('SEMUA')">📊 DASHBOARD</div>
+    <div class="nav-item" onclick="render('DAFTAR SP')">📜 SANKSI</div>
+    <div class="nav-item" onclick="render('KASUS BERJALAN')">⏱️ ACTIVE CASES</div>
+    <button class="btn" style="margin-top:auto; font-size:0.6rem; background:#111; color:#333;" onclick="loginAdmin()">COMMANDER LOGIN</button>
 </div>
 
 <div class="content">
     <div id="adminPanel">
-        <h2 style="font-family:'Oswald'; margin:0 0 20px 0; color:#fff; text-shadow: 0 0 10px var(--danger);">INTELLIGENCE INPUT</h2>
+        <h2 style="font-family:'Oswald'; color:white; margin:0 0 15px 0;">COMMANDER PANEL</h2>
         <div class="grid">
             <div>
-                <label>SUBJEK TARGET</label>
-                <input type="text" id="nama" placeholder="Masukkan Nama/NIP...">
-                <label>KLASIFIKASI</label>
+                <label>NAMA TARGET</label><input type="text" id="nama">
+                <label>KAT</label>
                 <select id="kategori">
                     <option>DAFTAR SP</option>
                     <option>KASUS BERJALAN</option>
-                    <option>DAFTAR PANTAU</option>
-                    <option>SIDAK LEGON</option>
                 </select>
             </div>
             <div>
-                <label>RINCIAN LAPORAN</label>
-                <textarea id="deskripsi" rows="4" placeholder="Tuliskan kronologi lengkap..."></textarea>
+                <label>LOG DETAIL</label><textarea id="deskripsi" rows="4"></textarea>
             </div>
         </div>
-        <button class="btn btn-save" onclick="saveData()">PUBLISH TO MASTER DATABASE</button>
-        <button class="btn" style="background:#2563eb; color:white; margin-top:10px; font-size:0.7rem;" onclick="generateVSCode()">📋 GENERATE DATA FOR COMMANDER</button>
+        <button class="btn btn-save" onclick="saveData()">SIMPAN DATA</button>
+        <button class="btn btn-mt" id="mtBtn" onclick="toggleMaintenance()">AKTIFKAN MODE MAINTENANCE</button>
+        <button class="btn" style="background:#2563eb; color:white; margin-top:10px; font-size:0.7rem;" onclick="generateVSCode()">📋 COPY FOR VS CODE</button>
     </div>
 
-    <h1 id="pageTitle" style="font-family:'Oswald'; font-size: 2.5rem; margin:0; color: #fff;">DASHBOARD CENTER</h1>
-    <p style="color: var(--gold); font-size: 0.7rem; margin-bottom: 30px;">INTERNAL AFFAIRS - LEGON DIVISION</p>
-    
+    <h1 id="pageTitle" style="font-family:'Oswald'; font-size: 2.5rem; margin:0;">DASHBOARD</h1>
     <table>
-        <thead>
-            <tr>
-                <th>DATE</th>
-                <th>CATEGORY</th>
-                <th>SUBJECT</th>
-                <th>INTELLIGENCE LOG</th>
-            </tr>
-        </thead>
+        <thead><tr><th>DATE</th><th>CATEGORY</th><th>SUBJECT</th><th>LOG</th></tr></thead>
         <tbody id="tBody"></tbody>
     </table>
-
-    <div class="update-footer">
-        LAST SYSTEM UPDATE: 24 FEB 2026 | OPERATOR: COMMANDER MAHENDRA
-    </div>
 </div>
 
 <script>
-    // --- MASTER DATA GITHUB ---
+    // --- MASTER DATA ---
     const MASTER_DATA = [
-        {date: "24/02/2026", kat: "DAFTAR SP", nama: "MICHAEL", det: "SP 1 - Pelanggaran Kode Etik Berat"},
+        {date: "24/02/2026", kat: "DAFTAR SP", nama: "MICHAEL", det: "Contoh Pelanggaran Kode Etik"},
     ];
 
     let isAdmin = false;
 
+    // Fungsi Maintenance
+    function toggleMaintenance() {
+        let status = localStorage.getItem('legon_mt') === 'true';
+        localStorage.setItem('legon_mt', !status);
+        checkMT();
+        alert(status ? "Maintenance Berakhir!" : "Maintenance Dimulai!");
+    }
+
+    function checkMT() {
+        let status = localStorage.getItem('legon_mt') === 'true';
+        document.getElementById('mt-screen').style.display = status ? 'flex' : 'none';
+        if(isAdmin) document.getElementById('mt-screen').style.display = 'none'; // Admin tetap bisa lihat web
+        document.getElementById('mtBtn').innerText = status ? "MATIKAN MODE MAINTENANCE" : "AKTIFKAN MODE MAINTENANCE";
+    }
+
     function loginAdmin() {
-        if(prompt("Enter Commander Access Key:") === "legon2026") {
+        if(prompt("Access Key:") === "legon2026") {
             isAdmin = true;
             document.getElementById('adminPanel').style.display = 'block';
-            updateNotif();
-            alert("Akses Diterima. Selamat Bekerja, Commander.");
+            checkMT();
         }
     }
 
     function saveData() {
-        const log = {
-            date: new Date().toLocaleDateString('id-ID'),
-            kat: document.getElementById('kategori').value,
-            nama: document.getElementById('nama').value.toUpperCase(),
-            det: document.getElementById('deskripsi').value
-        };
-        const local = JSON.parse(localStorage.getItem('legon_temp')) || [];
+        const log = { date: new Date().toLocaleDateString('id-ID'), kat: document.getElementById('kategori').value, nama: document.getElementById('nama').value.toUpperCase(), det: document.getElementById('deskripsi').value };
+        let local = JSON.parse(localStorage.getItem('legon_temp')) || [];
         local.push(log);
         localStorage.setItem('legon_temp', JSON.stringify(local));
         render();
-        updateNotif();
     }
 
     function render(filter = 'SEMUA') {
-        document.getElementById('pageTitle').innerText = filter;
         const tbody = document.getElementById('tBody');
         tbody.innerHTML = '';
         const local = JSON.parse(localStorage.getItem('legon_temp')) || [];
-        const combined = [...MASTER_DATA, ...local].reverse();
-
-        combined.forEach(item => {
+        [...MASTER_DATA, ...local].reverse().forEach(item => {
             if(filter === 'SEMUA' || item.kat === filter) {
-                tbody.innerHTML += `<tr>
-                    <td style="color:#555">${item.date}</td>
-                    <td style="color:var(--gold); font-weight:bold;">[ ${item.kat} ]</td>
-                    <td style="color:#fff"><b>${item.nama}</b></td>
-                    <td style="color:#999; font-style: italic;">"${item.det}"</td>
-                </tr>`;
+                tbody.innerHTML += `<tr><td>${item.date}</td><td style="color:var(--gold)">${item.kat}</td><td><b>${item.nama}</b></td><td>${item.det}</td></tr>`;
             }
         });
     }
 
-    function updateNotif() {
-        const local = JSON.parse(localStorage.getItem('legon_temp')) || [];
-        const badge = document.getElementById('notif-count');
-        if(local.length > 0) {
-            badge.innerText = local.length;
-            badge.style.display = 'inline';
-        } else {
-            badge.style.display = 'none';
-        }
-    }
-
     function generateVSCode() {
         const local = JSON.parse(localStorage.getItem('legon_temp')) || [];
-        if(local.length === 0) return alert("Antrian kosong.");
         let code = local.map(item => `{date: "${item.date}", kat: "${item.kat}", nama: "${item.nama}", det: "${item.det}"}`).join(",\n");
         navigator.clipboard.writeText(code + ",");
-        alert("DATA DI-COPY! Paste ke MASTER_DATA di VS Code kamu.");
+        alert("KODE COPY! Paste ke MASTER_DATA di VS Code.");
     }
 
+    checkMT();
     render();
-    updateNotif();
 </script>
 </body>
 </html>
