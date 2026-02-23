@@ -4,159 +4,155 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MDT LEGON - LEGATUS HONORIS</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Oswald:wght@500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #d4af37; --bg: #050505; --card: #111; --danger: #ff4444; --success: #22c55e; }
-        
-        body::before {
-            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 10001; background-size: 100% 2px, 3px 100%; pointer-events: none;
-        }
-
+        :root { --gold: #d4af37; --bg: #030303; --card: #0a0a0a; --danger: #ff4444; --success: #22c55e; --glitch: rgba(212, 175, 55, 0.3); }
         body { font-family: 'JetBrains Mono', monospace; background: var(--bg); color: #e0e0e0; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        
-        .sidebar { width: 280px; background: #000; border-right: 2px solid var(--gold); padding: 20px; display: flex; flex-direction: column; z-index: 10000; }
-        .logo-area { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 20px; margin-bottom: 25px; }
-        .logo-area h2 { font-family: 'Oswald', sans-serif; color: var(--gold); margin: 0; letter-spacing: 4px; font-size: 2rem; }
-        
-        .nav-group { margin-bottom: 20px; }
-        .nav-label { font-size: 0.6rem; color: #444; letter-spacing: 2px; margin-bottom: 10px; padding-left: 12px; }
-        .nav-item { padding: 12px; font-size: 0.8rem; color: #888; cursor: pointer; transition: 0.4s; border-left: 4px solid transparent; }
-        .nav-item:hover, .nav-item.active { background: linear-gradient(90deg, rgba(212, 175, 55, 0.15), transparent); color: var(--gold); border-left: 4px solid var(--gold); }
-        
-        .content { flex-grow: 1; padding: 40px; overflow-y: auto; z-index: 1; }
+        body::after { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: 10001; background-size: 100% 2px, 3px 100%; pointer-events: none; opacity: 0.15; }
+        .sidebar { width: 300px; background: #000; border-right: 1px solid #1a1a1a; padding: 30px 20px; display: flex; flex-direction: column; z-index: 10000; }
+        .logo-area { text-align: left; padding-bottom: 30px; border-bottom: 1px solid #1a1a1a; margin-bottom: 30px; }
+        .logo-area h2 { font-family: 'Bebas Neue', cursive; color: var(--gold); margin: 0; letter-spacing: 5px; font-size: 2.8rem; text-shadow: 0 0 15px var(--glitch); }
+        .nav-group { margin-bottom: 25px; }
+        .nav-label { font-size: 0.6rem; color: #333; letter-spacing: 3px; margin-bottom: 12px; font-weight: 700; text-transform: uppercase; }
+        .nav-item { padding: 14px 18px; font-size: 0.8rem; color: #666; cursor: pointer; transition: 0.3s; border-radius: 4px; margin-bottom: 5px; display: flex; align-items: center; gap: 12px; }
+        .nav-item:hover, .nav-item.active { background: #0a0a0a; color: var(--gold); border-right: 3px solid var(--gold); }
+        .content { flex-grow: 1; padding: 50px; overflow-y: auto; position: relative; }
         .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.5s; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .card { background: #111; padding: 25px; border: 1px solid #222; border-radius: 4px; margin-bottom: 20px; }
-        .asset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        
-        label { display: block; font-size: 0.6rem; color: var(--gold); margin-bottom: 4px; text-transform: uppercase; }
-        input, select, textarea { width: 100%; background: #000; border: 1px solid #333; color: white; padding: 10px; border-radius: 4px; font-family: inherit; font-size: 0.75rem; box-sizing: border-box; }
-        
-        .btn { padding: 12px; font-weight: 700; cursor: pointer; font-family: 'Oswald'; text-transform: uppercase; border: none; border-radius: 4px; transition: 0.3s; margin-top: 10px; }
-        .btn-gold { background: var(--gold); color: #000; width: 100%; }
-        .btn-del { background: var(--danger); color: white; padding: 3px 6px; font-size: 0.6rem; border-radius: 3px; cursor: pointer; }
-
-        table { width: 100%; border-collapse: separate; border-spacing: 0 5px; margin-top: 20px; }
-        th { color: var(--gold); padding: 15px; text-align: left; font-size: 0.7rem; border-bottom: 1px solid #333; }
-        tr { background: rgba(255, 255, 255, 0.02); }
-        td { padding: 12px; font-size: 0.75rem; }
-
-        .filter-btn { background: none; border: 1px solid #333; color: #666; cursor: pointer; padding: 6px 12px; font-size: 0.65rem; border-radius: 3px; margin-right: 5px; margin-bottom: 5px; }
-        .filter-btn.active { border-color: var(--gold); color: var(--gold); }
+        .page.active { display: block; animation: pageIn 0.6s ease-out; }
+        @keyframes pageIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
+        .duty-banner { background: #080800; border-left: 4px solid var(--gold); padding: 25px; color: var(--gold); font-size: 0.9rem; line-height: 1.6; margin-bottom: 40px; }
+        .quote { font-style: italic; color: #666; font-size: 0.75rem; margin-top: 12px; display: block; letter-spacing: 1px; }
+        .card { background: var(--card); padding: 30px; border: 1px solid #1a1a1a; margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { color: var(--gold); padding: 20px 15px; text-align: left; font-size: 0.65rem; text-transform: uppercase; border-bottom: 2px solid #1a1a1a; letter-spacing: 2px; }
+        td { padding: 18px 15px; font-size: 0.8rem; border-bottom: 1px solid #0d0d0d; color: #aaa; }
+        input, select, textarea { width: 100%; background: #000; border: 1px solid #1a1a1a; color: white; padding: 12px; font-family: inherit; font-size: 0.8rem; box-sizing: border-box; }
+        .btn { padding: 15px; font-weight: 700; cursor: pointer; font-family: 'Oswald'; text-transform: uppercase; border: none; transition: 0.3s; }
+        .btn-gold { background: var(--gold); color: #000; width: 100%; margin-top: 15px; }
+        .footer { margin-top: 100px; padding: 40px 0; border-top: 1px solid #1a1a1a; text-align: center; color: #333; }
+        .footer p { font-size: 0.7rem; letter-spacing: 4px; margin: 8px 0; font-weight: bold; }
+        .denda-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #222; }
     </style>
 </head>
 <body>
 
 <div class="sidebar">
-    <div class="logo-area"><h2>LEGON</h2><small style="color:#555">LEGATUS HONORIS</small></div>
-    <div class="nav-group">
-        <div class="nav-label">MAIN TERMINAL</div>
-        <div id="nav-aset" class="nav-item" onclick="showPage('aset')">💰 CEK ASET</div>
-        <div id="nav-denda" class="nav-item" onclick="showPage('denda')">📜 LIST DENDA</div>
-        <div id="nav-dashboard" class="nav-item active" onclick="showPage('dashboard')">📊 DASHBOARD</div>
+    <div class="logo-area">
+        <h2>LEGON</h2>
+        <small>LEGATUS HONORIS</small>
     </div>
-    <button id="loginBtn" class="btn" style="margin-top:auto; font-size:0.6rem; background:#111; color:#444; border: 1px solid #222;" onclick="loginAdmin()">COMMANDER LOGIN</button>
+    
+    <div class="nav-group">
+        <div class="nav-label">TERMINAL DATA</div>
+        <div id="nav-dashboard" class="nav-item active" onclick="showPage('dashboard')">📊 DASHBOARD</div>
+        <div id="nav-aset" class="nav-item" onclick="showPage('aset')">💰 CEK ASET</div>
+        <div id="nav-denda" class="nav-item" onclick="showPage('denda')">⚖️ LIST DENDA</div>
+    </div>
+
+    <div class="nav-group">
+        <div class="nav-label">INFORMASI</div>
+        <div id="nav-handbook" class="nav-item" onclick="showPage('handbook')">📜 HANDBOOK</div>
+    </div>
+    
+    <button id="loginBtn" class="btn" style="margin-top:auto; font-size:0.6rem; background:#050505; color:#222; border: 1px solid #111;" onclick="loginAdmin()">COMMANDER LOGIN</button>
 </div>
 
 <div class="content">
     
     <div id="dashboard" class="page active">
-        <h1 style="font-family:'Oswald'; font-size: 2.5rem; margin:0;">MDT DATABASE</h1>
+        <div class="duty-banner">
+            <b style="letter-spacing: 2px;">LEGON: MENJAGA KEMURNIAN, MENEGAKKAN DISIPLIN</b>
+            <span class="quote">"Puritas Et Disciplina"</span>
+        </div>
+
+        <h1 style="font-family:'Bebas Neue'; font-size: 3.5rem; letter-spacing: 2px; margin:0; color: #fff;">LOG OPERASIONAL</h1>
         
-        <div id="adminPanel" class="card" style="display:none; border-color:var(--gold);">
-            <h2 style="font-family:'Oswald'; margin-top:0;">COMMANDER INPUT</h2>
-            <div class="asset-grid">
-                <div><label>NAMA</label><input type="text" id="nama" placeholder="MICK"></div>
+        <div id="adminPanel" class="card" style="display:none; border: 1px solid var(--gold);">
+            <h2 style="font-family:'Oswald'; margin-top:0; color:var(--gold);">INPUT DATA BARU</h2>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                <div><label>NAMA TARGET</label><input type="text" id="nama"></div>
                 <div><label>KATEGORI</label>
                     <select id="kategori">
                         <option>ANGGOTA SP</option>
                         <option>DAFTAR PANTAU</option>
                         <option>SANKSI ONGOING</option>
-                        <option>KASUS BERJALAN</option>
+                        <option>HASIL SIDANG</option>
                     </select>
                 </div>
             </div>
-            <label>LOG PELANGGARAN</label><textarea id="deskripsi" placeholder="Tulis detail di sini..."></textarea>
-            <button class="btn btn-gold" onclick="saveData()">PUBLISH & COPY CODE</button>
+            <label style="margin-top:20px;">DETAIL LOG</label><textarea id="deskripsi" rows="4"></textarea>
+            <button class="btn btn-gold" onclick="saveData()">PUBLISH DATA</button>
         </div>
 
-        <div style="margin-top: 20px;">
-            <input type="text" id="searchInput" placeholder="CARI NAMA / KATEGORI..." onkeyup="filterSearch()" style="margin-bottom: 15px;">
-            <div id="filterContainer">
-                <button class="filter-btn active" onclick="renderDashboard('SEMUA', this)">SEMUA</button>
-                <button class="filter-btn" onclick="renderDashboard('ANGGOTA SP', this)">SP</button>
-                <button class="filter-btn" onclick="renderDashboard('DAFTAR PANTAU', this)">DAFTAR PANTAU</button>
-                <button class="filter-btn" onclick="renderDashboard('SANKSI ONGOING', this)">SANKSI</button>
-                <button class="filter-btn" onclick="renderDashboard('KASUS BERJALAN', this)">KASUS</button>
-            </div>
+        <div style="margin-top: 40px;">
+            <input type="text" id="searchInput" placeholder="CARI DATA..." onkeyup="filterSearch()" style="margin-bottom: 25px; padding: 15px 20px;">
         </div>
 
         <table>
-            <thead><tr><th>TANGGAL</th><th>KAT</th><th>NAMA</th><th>LOG</th><th id="admHead" style="display:none">AKSI</th></tr></thead>
+            <thead><tr><th>TANGGAL</th><th>KATEGORI</th><th>SUBJEK</th><th>LOG DETAIL</th><th id="admHead" style="display:none">AKSI</th></tr></thead>
             <tbody id="tBody"></tbody>
         </table>
     </div>
 
     <div id="aset" class="page">
-        <h1 style="font-family:'Oswald'; font-size: 2.5rem; margin:0;">CEK ASET RESIGN</h1>
+        <h1 style="font-family:'Bebas Neue'; font-size: 3.5rem; margin:0;">CEK ASET RESIGN</h1>
+        <div class="card" style="max-width: 800px;">
+            <label>NAMA PERSONIL</label><input type="text" id="aset_nama" oninput="hitungAset()">
+            <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:20px; margin-top:20px;" id="gudangGrid"></div>
+            <label style="margin-top:20px;">BIAYA PENDAMPINGAN PULAU</label><input type="number" id="aset_pulau" oninput="hitungAset()">
+            <div style="margin-top:40px; border-top: 1px solid #222; padding-top:20px; display:flex; justify-content:space-between;">
+                <span style="font-family:'Oswald';">TOTAL TAGIHAN:</span>
+                <span style="font-size:2.5rem; color:var(--success); font-family:'Oswald';">$<span id="aset_total">0</span></span>
+            </div>
+            <textarea id="aset_template" rows="6" readonly style="margin-top:20px; color:var(--success); font-size:0.75rem;"></textarea>
+            <button class="btn btn-gold" style="background:#5865F2; color:white;" onclick="copyAset()">SALIN KE DISCORD</button>
+        </div>
+    </div>
+
+    <div id="handbook" class="page">
+        <h1 style="font-family:'Bebas Neue'; font-size: 3.5rem; margin:0;">PANDUAN LEGON</h1>
         <div class="card">
-            <label>NAMA ANGGOTA</label><input type="text" id="aset_nama" placeholder="NAMA..." oninput="hitungAset()">
-            <div class="asset-grid" style="margin-top:20px;">
-                <div><label>GUDANG TIC</label><select class="gudang" onchange="hitungAset()"><option value="0">BUKA</option><option value="50000">BAYAR</option></select></div>
-                <div><label>GUDANG INDUSTRI</label><select class="gudang" onchange="hitungAset()"><option value="0">BUKA</option><option value="50000">BAYAR</option></select></div>
-                <div><label>GUDANG PALETO</label><select class="gudang" onchange="hitungAset()"><option value="0">BUKA</option><option value="50000">BAYAR</option></select></div>
-                <div><label>GUDANG PUNCAK</label><select class="gudang" onchange="hitungAset()"><option value="0">BUKA</option><option value="50000">BAYAR</option></select></div>
-                <div><label>GUDANG WT</label><select class="gudang" onchange="hitungAset()"><option value="0">BUKA</option><option value="50000">BAYAR</option></select></div>
-                <div><label>GUDANG STARK GARAGE</label><select class="gudang" onchange="hitungAset()"><option value="0">BUKA</option><option value="50000">BAYAR</option></select></div>
-                <div><label>GUDANG PANTAI</label><select class="gudang" onchange="hitungAset()"><option value="0">BUKA</option><option value="50000">BAYAR</option></select></div>
-                <div><label>GUDANG KANPOL</label><select class="gudang" onchange="hitungAset()"><option value="0">BUKA</option><option value="50000">BAYAR</option></select></div>
-                <div><label>GUDANG BANDARA</label><select class="gudang" onchange="hitungAset()"><option value="0">BUKA</option><option value="50000">BAYAR</option></select></div>
-                <div><label>GUDANG BASECAMP</label><select class="gudang" onchange="hitungAset()"><option value="0">BUKA</option><option value="50000">BAYAR</option></select></div>
-                <div><label>GUDANG KASTIL</label><select class="gudang" onchange="hitungAset()"><option value="0">BUKA</option><option value="50000">BAYAR</option></select></div>
-                <div><label>BIAYA PENDAMPINGAN</label><input type="number" id="aset_pulau" placeholder="0" oninput="hitungAset()"></div>
+            <h3 style="color:var(--gold); font-family:'Oswald'; border-bottom: 1px solid #222; padding-bottom:10px;">PROTOKOL WEWENANG</h3>
+            <div style="color:#888; line-height:2.2; font-size: 0.85rem;">
+                [01] <b style="color:white">PENGAWASAN:</b> Memantau kinerja harian anggota Sheriff.<br>
+                [02] <b style="color:white">TEGURAN:</b> Memberikan peringatan lisan/tertulis atas pelanggaran ringan.<br>
+                [03] <b style="color:white">PEMERIKSAAN:</b> Melakukan investigasi mendalam terhadap personil bermasalah.<br>
+                [04] <b style="color:white">PERSIDANGAN:</b> Mengatur dan memimpin sidang yudisial internal.<br>
+                [05] <b style="color:white">EKSEKUSI:</b> Menetapkan sanksi akhir mulai dari SP1 hingga PTDH.
             </div>
-            <div class="total-box" style="font-size: 1.8rem; color: var(--success); display:flex; justify-content:space-between; border-top:1px solid #333; padding-top:15px;">
-                <span>TOTAL TAGIHAN:</span><span>$<span id="aset_total">0</span></span>
-            </div>
-            <textarea id="aset_template" rows="8" readonly style="margin-top:20px; color:var(--success); font-size:0.7rem;"></textarea>
-            <button class="btn btn-gold" style="background:#5865F2; color:white;" onclick="copyAset()">📋 SALIN KE DISCORD</button>
         </div>
     </div>
 
     <div id="denda" class="page">
-        <h1 style="font-family:'Oswald'; font-size: 2.5rem; margin:0;">LIST DENDA SENJATA</h1>
+        <h1 style="font-family:'Bebas Neue'; font-size: 3.5rem; margin:0;">LIST DENDA SENJATA</h1>
+        <p style="color:#444; margin-bottom:20px;">Denda jika senjata hilang tidak ditemukan dalam 7x24 jam.</p>
         <div class="card" id="dendaList"></div>
     </div>
 
+    <div class="footer">
+        <p>// SISTEM INTERNAL LEGATUS HONORIS //</p>
+        <p>© 2026 SHERIFF KERAJAAN ROXWOOD</p>
+    </div>
 </div>
 
 <script>
-    let MASTER_DATA = [{date: "24/02/2026", kat: "ANGGOTA SP", nama: "MICHAEL", det: "[SP 1] Pelanggaran Etika"}];
+    let MASTER_DATA = [{date: "24/02/2026", kat: "ANGGOTA SP", nama: "MICHAEL", det: "[SP 1] Pelanggaran Etika Lapangan"}];
     let isCommander = false;
-
+    const GUDANGS = ["TIC", "INDUSTRI", "PALETO", "PUNCAK", "WT", "STARK GARAGE", "PANTAI", "KANPOL", "BANDARA", "BASECAMP", "KASTIL"];
     const DENDA_ITEMS = [
-        {w: "Taser, Nightstick, Pisau (WD)", p: "500.000"},
-        {w: "Glock", p: "1.500.000"},
-        {w: "AP Pistol", p: "2.000.000"},
-        {w: "Heavy Revolver - SMG", p: "3.000.000"},
-        {w: "Combat Pistol", p: "3.500.000"},
-        {w: "AUG - Carbine", p: "4.000.000"},
-        {w: "Vintage Pistol - Heavy Sniper", p: "5.000.000"}
+        {w: "Taser / Nightstick / Pisau", p: "500.000"}, {w: "Glock", p: "1.500.000"}, {w: "AP Pistol", p: "2.000.000"},
+        {w: "Heavy Revolver / SMG", p: "3.000.000"}, {w: "Combat Pistol", p: "3.500.000"},
+        {w: "AUG / Carbine", p: "4.000.000"}, {w: "Heavy Sniper", p: "5.000.000"}
     ];
 
     function loginAdmin() {
-        if(prompt("Commander Key:") === "legon2026") {
+        if(prompt("PASSWORD:") === "legon2026") {
             isCommander = true;
             document.getElementById('adminPanel').style.display = 'block';
             document.getElementById('admHead').style.display = 'table-cell';
-            document.getElementById('loginBtn').innerText = "KANG ESKRIM LOGGED IN";
+            document.getElementById('loginBtn').innerText = "MODE COMMANDER AKTIF";
             renderDashboard();
-            alert("welcome to admin mode");
+            alert("Selamat datang, Commander.");
         }
     }
 
@@ -168,26 +164,14 @@
     }
 
     function renderDashboard(filter = 'SEMUA', btn = null) {
-        if(btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
+        if(btn) { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
         const local = JSON.parse(localStorage.getItem('legon_local')) || [];
         const combined = [...MASTER_DATA, ...local];
         const tbody = document.getElementById('tBody');
         tbody.innerHTML = '';
-
         combined.forEach((i, idx) => {
             if(filter === 'SEMUA' || i.kat === filter) {
-                tbody.innerHTML += `<tr>
-                    <td>${i.date}</td>
-                    <td style="color:var(--gold)">${i.kat}</td>
-                    <td><b>${i.nama}</b></td>
-                    <td>${i.det}</td>
-                    <td style="display:${isCommander ? 'table-cell' : 'none'}">
-                        <button class="btn-del" onclick="delItem(${idx})">X</button>
-                    </td>
-                </tr>`;
+                tbody.innerHTML += `<tr><td>${i.date}</td><td style="color:var(--gold)">${i.kat}</td><td style="color:#fff"><b>${i.nama}</b></td><td>${i.det}</td><td style="display:${isCommander ? 'table-cell' : 'none'}"><button onclick="delItem(${idx})" style="background:#200; color:red; border:1px solid #400; cursor:pointer; padding:5px;">HAPUS</button></td></tr>`;
             }
         });
     }
@@ -199,52 +183,47 @@
     }
 
     function hitungAset() {
-        let gTotal = 0;
-        let rincian = "";
+        let gt = 0; let rinc = "";
         const selects = document.querySelectorAll('.gudang');
         const labels = document.querySelectorAll('.asset-grid label');
         selects.forEach((s, i) => {
-            let v = parseInt(s.value); gTotal += v;
-            rincian += `> ${labels[i].innerText}: ${v > 0 ? 'BAYAR ($50k)' : 'BUKA (FREE)'}\n`;
+            let v = parseInt(s.value); gt += v;
+            if(v > 0) rinc += `> GUDANG ${GUDANGS[i]}: BAYAR\n`;
         });
         let p = parseInt(document.getElementById('aset_pulau').value) || 0;
-        let final = gTotal + p;
+        let final = gt + p;
         document.getElementById('aset_total').innerText = final.toLocaleString('id-ID');
-        document.getElementById('aset_template').value = `**[ CEK ASET ANGGOTA RESIGN ]**\nNama: ${document.getElementById('aset_nama').value.toUpperCase()}\n--------------------\n${rincian}--------------------\nTOTAL: $${final.toLocaleString('id-ID')}\nStatus: WAJIB LUNAS`;
+        document.getElementById('aset_template').value = `**[ CEK ASET RESIGN ]**\nNama: ${document.getElementById('aset_nama').value.toUpperCase()}\n${rinc}Biaya Pulau: $${p.toLocaleString()}\nTOTAL: $${final.toLocaleString()}\nSTATUS: BELUM LUNAS`;
     }
 
     function copyAset() {
         document.getElementById('aset_template').select();
         document.execCommand('copy');
-        alert("data berhasil disalin, kirim ke mdt legon ya");
+        alert("Laporan disalin!");
     }
 
     function saveData() {
         const n = document.getElementById('nama').value.toUpperCase();
         const k = document.getElementById('kategori').value;
         const d = document.getElementById('deskripsi').value;
-        if(!n || !d) return alert("Isi Data!");
+        if(!n || !d) return alert("DATA TIDAK LENGKAP.");
         let local = JSON.parse(localStorage.getItem('legon_local')) || [];
         local.push({ date: new Date().toLocaleDateString('id-ID'), kat: k, nama: n, det: d });
         localStorage.setItem('legon_local', JSON.stringify(local));
-        
-        let code = [...MASTER_DATA, ...local].map(i => `{date: "${i.date}", kat: "${i.kat}", nama: "${i.nama}", det: "${i.det}"}`).join(",\n");
-        navigator.clipboard.writeText(code + ",");
-        alert("data berhasil disalin, kirim ke mdt legon ya");
         renderDashboard();
+        alert("Data tersimpan!");
     }
 
     function delItem(idx) {
-        if(!confirm("Hapus?")) return;
+        if(!confirm("Hapus log?")) return;
         let local = JSON.parse(localStorage.getItem('legon_local')) || [];
         local.splice(idx - MASTER_DATA.length, 1);
         localStorage.setItem('legon_local', JSON.stringify(local));
         renderDashboard();
     }
 
-    // Render List Denda
-    document.getElementById('dendaList').innerHTML = DENDA_ITEMS.map(i => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #222"><span style="color:var(--gold)">${i.w}</span><span style="color:var(--success)">$${i.p}</span></div>`).join('');
-    
+    document.getElementById('gudangGrid').innerHTML = GUDANGS.map(g => `<div><label>GUDANG ${g}</label><select class="gudang" onchange="hitungAset()"><option value="0">DIBUKA (FREE)</option><option value="50000">DIBAYAR ($50k)</option></select></div>`).join('');
+    document.getElementById('dendaList').innerHTML = DENDA_ITEMS.map(i => `<div class="denda-item"><span style="color:var(--gold)">${i.w}</span><span style="color:var(--success)">$${i.p}</span></div>`).join('');
     renderDashboard();
 </script>
 </body>
