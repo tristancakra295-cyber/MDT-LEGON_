@@ -8,7 +8,6 @@
     <style>
         :root { --gold: #d4af37; --bg: #050505; --card: #111; --danger: #ff4444; --admin-bg: #2b0303; --success: #22c55e; }
         
-        /* Efek Monitor Cyberpunk (Klik Tembus) */
         body::before {
             content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
@@ -17,12 +16,7 @@
 
         body { font-family: 'JetBrains Mono', monospace; background: var(--bg); color: #e0e0e0; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* SIDEBAR NAVIGATION */
-        .sidebar { 
-            width: 280px; background: #000; border-right: 2px solid var(--gold); 
-            padding: 20px; display: flex; flex-direction: column; z-index: 10000; 
-        }
-        
+        .sidebar { width: 280px; background: #000; border-right: 2px solid var(--gold); padding: 20px; display: flex; flex-direction: column; z-index: 10000; }
         .logo-area { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 20px; margin-bottom: 25px; }
         .logo-area h2 { font-family: 'Oswald', sans-serif; color: var(--gold); margin: 0; letter-spacing: 4px; font-size: 2rem; }
         
@@ -31,22 +25,19 @@
         
         .content { flex-grow: 1; padding: 40px; overflow-y: auto; z-index: 1; }
         
-        /* ADMIN PANEL UI */
         #adminPanel { display: none; background: var(--admin-bg); padding: 25px; border-radius: 8px; margin-bottom: 35px; border: 1px solid var(--danger); }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         input, textarea, select { width: 100%; background: #000; border: 1px solid #333; color: var(--gold); padding: 12px; margin: 8px 0; border-radius: 4px; font-family: inherit; }
         
         .btn { padding: 12px; font-weight: 700; cursor: pointer; font-family: 'Oswald'; text-transform: uppercase; border: none; border-radius: 4px; transition: 0.3s; }
         .btn-save { background: var(--gold); color: #000; width: 100%; margin-bottom: 10px; }
-        .btn-clear { background: #333; color: #999; width: 100%; font-size: 0.7rem; }
-        .btn-clear:hover { background: var(--danger); color: white; }
+        .btn-del { background: var(--danger); color: white; padding: 4px 8px; font-size: 0.6rem; cursor: pointer; border-radius: 3px; font-weight: bold; }
 
-        /* TABLE STYLING */
         table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
         th { color: var(--gold); padding: 15px; text-align: left; font-size: 0.75rem; border-bottom: 1px solid #333; }
         tr { background: rgba(255, 255, 255, 0.02); transition: 0.3s; }
-        tr:hover { background: rgba(212, 175, 55, 0.05); }
-        td { padding: 15px; font-size: 0.8rem; border-top: 1px solid #222; border-bottom: 1px solid #222; }
+        .ptdh-row { border-left: 5px solid var(--danger); background: rgba(255, 0, 0, 0.05) !important; }
+        td { padding: 15px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -67,7 +58,7 @@
         <h2 style="font-family:'Oswald'; color:white; margin:0 0 15px 0;">INPUT DATA (ADMIN MODE)</h2>
         <div class="grid">
             <div>
-                <label>NAMA TARGET</label><input type="text" id="nama" placeholder="Contoh: MICK">
+                <label>NAMA TARGET</label><input type="text" id="nama" placeholder="CONTOH: MICK">
                 <label>KATEGORI</label>
                 <select id="kategori">
                     <option>ANGGOTA SP</option>
@@ -77,103 +68,117 @@
                 </select>
             </div>
             <div>
-                <label>KETERANGAN / LOG</label><textarea id="deskripsi" rows="4" placeholder="Detail pelanggaran atau status..."></textarea>
+                <label>KETERANGAN / LOG</label><textarea id="deskripsi" rows="4" placeholder="Detail kasus..."></textarea>
             </div>
         </div>
-        <button class="btn btn-save" onclick="saveData()">PUBLISH KE DASHBOARD BROWSER</button>
-        
-        <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button class="btn" style="background:#2563eb; color:white; flex: 2; font-size: 0.7rem;" onclick="generateVSCode()">📋 COPY FOR VS CODE SINKRONISASI</button>
-            <button class="btn btn-clear" style="flex: 1;" onclick="clearLocalStorage()">🗑️ RESET DATA LOKAL</button>
+        <button class="btn btn-save" onclick="saveData()">PUBLISH KE DASHBOARD</button>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn" style="background:#2563eb; color:white; flex: 2; font-size: 0.7rem;" onclick="generateVSCode()">📋 COPY DATABASE UNTUK KANG ESKRIM (MICKO)</button>
+            <button class="btn" style="background:#333; color:#999; flex: 1; font-size: 0.7rem;" onclick="clearLocal()">🗑️ RESET ALL</button>
         </div>
     </div>
 
     <h1 id="pageTitle" style="font-family:'Oswald'; font-size: 2.5rem; margin:0;">DASHBOARD</h1>
     <table>
-        <thead><tr><th>TANGGAL</th><th>KATEGORI</th><th>NAMA</th><th>DETAIL LOG</th></tr></thead>
+        <thead><tr><th>TANGGAL</th><th>KATEGORI</th><th>NAMA</th><th>DETAIL LOG</th><th class="admin-only" style="display:none">AKSI</th></tr></thead>
         <tbody id="tBody"></tbody>
     </table>
 </div>
 
 <script>
-    // --- DATABASE UTAMA (UBAH DISINI LALU UPLOAD KE GITHUB) ---
-    const MASTER_DATA = [
-        {date: "24/02/2026", kat: "ANGGOTA SP", nama: "MICHAEL", det: "Pelanggaran Etika Berat"},
+    // --- DATABASE MASTER (PERMANEN) ---
+    let MASTER_DATA = [
+        {date: "24/02/2026", kat: "ANGGOTA SP", nama: "MICHAEL", det: "[SP 1] Pelanggaran Etika"},
     ];
-    // ---------------------------------------------------------
 
     let isAdmin = false;
 
-    // Login Admin Mode
     function loginAdmin() {
-        let pass = prompt("Access Key Legatus Honoris:");
-        if(pass === "legon2026") {
+        if(prompt("Access Key Legatus Honoris:") === "legon2026") {
             isAdmin = true;
             document.getElementById('adminPanel').style.display = 'block';
-            alert("Commander Mode Active. Anda sekarang bisa input data.");
-        } else {
-            alert("Akses Ditolak.");
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'table-cell');
+            render();
+            alert("welcome to admin mode");
         }
     }
 
-    // Simpan data sementara ke browser
     function saveData() {
-        const log = { 
-            date: new Date().toLocaleDateString('id-ID'), 
-            kat: document.getElementById('kategori').value, 
-            nama: document.getElementById('nama').value.toUpperCase(), 
-            det: document.getElementById('deskripsi').value 
-        };
-        if(!log.nama || !log.det) return alert("Mohon lengkapi Nama dan Detail!");
-        
+        const n = document.getElementById('nama').value.toUpperCase();
+        const k = document.getElementById('kategori').value;
+        const d = document.getElementById('deskripsi').value;
+        if(!n || !d) return alert("Data kosong!");
+
         let local = JSON.parse(localStorage.getItem('legon_temp')) || [];
-        local.push(log);
-        localStorage.setItem('legon_temp', JSON.stringify(local));
+        const all = [...MASTER_DATA, ...local];
         
+        let statusSP = "";
+        if(k === "ANGGOTA SP") {
+            let count = all.filter(i => i.nama === n && i.kat === "ANGGOTA SP").length + 1;
+            statusSP = count === 1 ? "[SP 1]" : count === 2 ? "[SP 2]" : "[SP 3 - PTDH]";
+        }
+
+        local.push({ date: new Date().toLocaleDateString('id-ID'), kat: k, nama: n, det: statusSP + " " + d });
+        localStorage.setItem('legon_temp', JSON.stringify(local));
         document.getElementById('nama').value = '';
         document.getElementById('deskripsi').value = '';
         render();
     }
 
-    // Render tabel data
+    // Fungsi Hapus yang otomatis menyalin database terbaru
+    function deleteItem(index, isMaster) {
+        if(!confirm("Hapus data ini? (Sistem akan otomatis menyalin database terbaru setelah ini)")) return;
+        
+        if(isMaster) {
+            MASTER_DATA.splice(index, 1);
+        } else {
+            let local = JSON.parse(localStorage.getItem('legon_temp')) || [];
+            local.splice(index, 1);
+            localStorage.setItem('legon_temp', JSON.stringify(local));
+        }
+        
+        render();
+        generateVSCode(); // Otomatis panggil fungsi copy setelah hapus
+    }
+
     function render(filter = 'SEMUA') {
-        document.getElementById('pageTitle').innerText = filter;
         const tbody = document.getElementById('tBody');
         tbody.innerHTML = '';
         const local = JSON.parse(localStorage.getItem('legon_temp')) || [];
-        const combined = [...MASTER_DATA, ...local].reverse();
-
-        combined.forEach(item => {
-            if(filter === 'SEMUA' || item.kat === filter) {
-                tbody.innerHTML += `<tr>
-                    <td style="color:#666">${item.date}</td>
-                    <td style="color:var(--gold)">${item.kat}</td>
-                    <td><b>${item.nama}</b></td>
-                    <td style="color:#aaa">${item.det}</td>
-                </tr>`;
-            }
-        });
+        MASTER_DATA.forEach((item, i) => { if(filter === 'SEMUA' || item.kat === filter) addRow(item, i, true); });
+        local.forEach((item, i) => { if(filter === 'SEMUA' || item.kat === filter) addRow(item, i, false); });
     }
 
-    // Format data untuk dipaste ke VS Code
+    function addRow(item, index, isMaster) {
+        const tbody = document.getElementById('tBody');
+        const isPTDH = item.det.includes("PTDH");
+        tbody.innerHTML += `
+            <tr class="${isPTDH ? 'ptdh-row' : ''}">
+                <td style="color:#666">${item.date}</td>
+                <td style="color:var(--gold)">${item.kat}</td>
+                <td><b>${item.nama}</b></td>
+                <td style="color:#aaa">${item.det}</td>
+                <td class="admin-only" style="display:${isAdmin ? 'table-cell' : 'none'}">
+                    <button class="btn-del" onclick="deleteItem(${index}, ${isMaster})">HAPUS</button>
+                </td>
+            </tr>`;
+    }
+
     function generateVSCode() {
         const local = JSON.parse(localStorage.getItem('legon_temp')) || [];
-        if(local.length === 0) return alert("Belum ada data baru untuk di-copy.");
-        let code = local.map(item => `{date: "${item.date}", kat: "${item.kat}", nama: "${item.nama}", det: "${item.det}"}`).join(",\n");
+        const finalData = [...MASTER_DATA, ...local];
+        let code = finalData.map(i => `{date: "${i.date}", kat: "${i.kat}", nama: "${i.nama}", det: "${i.det}"}`).join(",\n");
         navigator.clipboard.writeText(code + ",");
-        alert("DATA COPIED! Silakan paste ke MASTER_DATA di VS Code kamu.");
+        alert("data berhasil disalin, kirim ke mdt legon ya");
     }
 
-    // Hapus data sementara di browser
-    function clearLocalStorage() {
-        if(confirm("Hapus semua riwayat input di browser ini? Lakukan ini HANYA jika data sudah masuk ke VS Code!")) {
+    function clearLocal() {
+        if(confirm("Reset input sementara?")) {
             localStorage.removeItem('legon_temp');
             render();
-            alert("Data lokal dibersihkan.");
         }
     }
 
-    // Inisialisasi awal
     render();
 </script>
 </body>
