@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDT LEGON - OFFICIAL SYSTEM</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #d4af37; --bg: #0a0a0a; --card: #1a1a1a; --danger: #ff4444; --admin-bg: #450a0a; }
+        body { font-family: 'JetBrains Mono', monospace; background: var(--bg); color: #e0e0e0; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background: #000; border-right: 2px solid var(--gold); padding: 15px; display: flex; flex-direction: column; }
+        .logo-area { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 15px; margin-bottom: 20px; }
+        .logo-area h2 { font-family: 'Oswald', sans-serif; color: var(--gold); margin: 0; letter-spacing: 2px; }
+        
+        .nav-item { padding: 12px; font-size: 0.8rem; color: #bbb; cursor: pointer; transition: 0.3s; border-left: 3px solid transparent; display: flex; justify-content: space-between; align-items: center; }
+        .nav-item:hover, .nav-item.active { background: rgba(212, 175, 55, 0.1); color: var(--gold); border-left: 3px solid var(--gold); }
+        
+        /* Notification Badge */
+        .badge-notif { background: var(--danger); color: white; border-radius: 50%; padding: 2px 7px; font-size: 0.6rem; font-weight: bold; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+        .content { flex-grow: 1; padding: 30px; overflow-y: auto; }
+        #adminPanel { display: none; background: var(--admin-bg); padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid var(--danger); }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        input, textarea, select { width: 100%; background: #000; border: 1px solid #444; color: #fff; padding: 10px; margin: 5px 0 15px; border-radius: 3px; font-family: inherit; }
+        
+        .btn { padding: 12px; font-weight: bold; cursor: pointer; font-family: 'Oswald'; text-transform: uppercase; border: none; border-radius: 4px; }
+        .btn-save { background: var(--gold); color: #000; width: 100%; }
+        .btn-copy { background: #2563eb; color: #fff; margin-top: 10px; font-size: 0.7rem; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #000; color: var(--gold); padding: 12px; text-align: left; border-bottom: 2px solid var(--gold); font-size: 0.8rem; }
+        td { padding: 12px; border-bottom: 1px solid #222; font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="logo-area"><h2>LEGON</h2><small>MDT v2.5</small></div>
+    
+    <div class="nav-item active" onclick="render('SEMUA')">📊 SEMUA DATA</div>
+    <div class="nav-item" onclick="render('DAFTAR SP')">📜 DAFTAR SP</div>
+    <div class="nav-item" onclick="render('KASUS BERJALAN')">
+        ⏱️ KASUS BERJALAN 
+        <span id="notif-count" class="badge-notif" style="display:none">0</span>
+    </div>
+
+    <button class="btn" style="margin-top:auto; font-size:0.6rem; background:#111; color:#555" onclick="loginAdmin()">ADMIN LOGIN</button>
+</div>
+
+<div class="content">
+    <div id="adminPanel">
+        <h2 style="font-family:'Oswald'; margin:0 0 15px 0; color:#ffcfcf">COMMANDER PANEL</h2>
+        <div class="grid">
+            <div>
+                <label>NAMA SUBJEK</label>
+                <input type="text" id="nama" placeholder="Input Nama...">
+                <label>KATEGORI</label>
+                <select id="kategori">
+                    <option>DAFTAR SP</option>
+                    <option>KASUS BERJALAN</option>
+                    <option>DAFTAR PANTAU</option>
+                </select>
+            </div>
+            <div>
+                <label>DETAIL KASUS</label>
+                <textarea id="deskripsi" rows="4" placeholder="Detail..."></textarea>
+            </div>
+        </div>
+        <button class="btn btn-save" onclick="saveData()">SIMPAN DATA BARU</button>
+        <button class="btn btn-copy" onclick="generateVSCode()">📋 COPY CODE UNTUK VS CODE COMMANDER</button>
+        <p style="font-size:0.6rem; color:#fca5a5; margin-top:10px;">*Klik tombol biru setelah input, lalu kirim teksnya ke Commander via Discord untuk Update Global.</p>
+    </div>
+
+    <h1 id="pageTitle" style="font-family:'Oswald'; border-bottom: 2px solid var(--gold); padding-bottom:10px;">DASHBOARD UTAMA</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>TGL</th>
+                <th>KAT</th>
+                <th>NAMA</th>
+                <th>DETAIL</th>
+            </tr>
+        </thead>
+        <tbody id="tBody"></tbody>
+    </table>
+</div>
+
+<script>
+    // --- DATABASE UTAMA GITHUB (Mahendra paste di sini setiap update) ---
+    const MASTER_DATA = [
+        {date: "24/02/2026", kat: "DAFTAR SP", nama: "MICHAEL", det: "SP 1 - Penyalahgunaan Senjata"},
+    ];
+    // ------------------------------------------------------------------
+
+    let isAdmin = false;
+
+    function loginAdmin() {
+        if(prompt("Password:") === "legon2026") {
+            isAdmin = true;
+            document.getElementById('adminPanel').style.display = 'block';
+            updateNotif();
+            alert("Mode Admin Aktif!");
+        }
+    }
+
+    function saveData() {
+        const log = {
+            date: new Date().toLocaleDateString('id-ID'),
+            kat: document.getElementById('kategori').value,
+            nama: document.getElementById('nama').value.toUpperCase(),
+            det: document.getElementById('deskripsi').value
+        };
+        const local = JSON.parse(localStorage.getItem('legon_temp')) || [];
+        local.push(log);
+        localStorage.setItem('legon_temp', JSON.stringify(local));
+        render();
+        updateNotif();
+    }
+
+    function render(filter = 'SEMUA') {
+        document.getElementById('pageTitle').innerText = filter;
+        const tbody = document.getElementById('tBody');
+        tbody.innerHTML = '';
+        
+        const local = JSON.parse(localStorage.getItem('legon_temp')) || [];
+        const combined = [...MASTER_DATA, ...local].reverse();
+
+        combined.forEach(item => {
+            if(filter === 'SEMUA' || item.kat === filter) {
+                tbody.innerHTML += `<tr>
+                    <td style="color:#666">${item.date}</td>
+                    <td style="color:var(--gold)">${item.kat}</td>
+                    <td><b>${item.nama}</b></td>
+                    <td style="color:#bbb">${item.det}</td>
+                </tr>`;
+            }
+        });
+    }
+
+    function updateNotif() {
+        const local = JSON.parse(localStorage.getItem('legon_temp')) || [];
+        const badge = document.getElementById('notif-count');
+        if(local.length > 0) {
+            badge.innerText = local.length;
+            badge.style.display = 'inline';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function generateVSCode() {
+        const local = JSON.parse(localStorage.getItem('legon_temp')) || [];
+        if(local.length === 0) return alert("Tidak ada data baru untuk di-copy.");
+        
+        let code = local.map(item => 
+            `{date: "${item.date}", kat: "${item.kat}", nama: "${item.nama}", det: "${item.det}"}`
+        ).join(",\n");
+        
+        navigator.clipboard.writeText(code + ",");
+        alert("KODE DI-COPY! Kirim ke Commander lewat Discord.");
+        
+        if(confirm("Hapus antrian notifikasi? (Lakukan ini jika sudah kirim ke Commander)")) {
+            localStorage.removeItem('legon_temp');
+            updateNotif();
+            render();
+        }
+    }
+
+    render();
+    updateNotif();
+</script>
+</body>
+</html>
