@@ -6,7 +6,7 @@
     <title>MDT LEGON - LEGATUS HONORIS</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #d4af37; --bg: #050505; --card: #111; --danger: #ff4444; --admin-bg: #2b0303; --success: #22c55e; }
+        :root { --gold: #d4af37; --bg: #050505; --card: #111; --danger: #ff4444; --success: #22c55e; }
         
         body::before {
             content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
@@ -32,35 +32,34 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .card { background: #111; padding: 25px; border: 1px solid #222; border-radius: 4px; margin-bottom: 20px; }
-        .asset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .asset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
         
         label { display: block; font-size: 0.6rem; color: var(--gold); margin-bottom: 4px; text-transform: uppercase; }
-        input, select, textarea { width: 100%; background: #000; border: 1px solid #333; color: white; padding: 10px; border-radius: 4px; font-family: inherit; font-size: 0.75rem; }
+        input, select, textarea { width: 100%; background: #000; border: 1px solid #333; color: white; padding: 10px; border-radius: 4px; font-family: inherit; font-size: 0.75rem; box-sizing: border-box; }
         
         .btn { padding: 12px; font-weight: 700; cursor: pointer; font-family: 'Oswald'; text-transform: uppercase; border: none; border-radius: 4px; transition: 0.3s; margin-top: 10px; }
         .btn-gold { background: var(--gold); color: #000; width: 100%; }
-        .btn-del { background: var(--danger); color: white; padding: 4px 8px; font-size: 0.6rem; cursor: pointer; border-radius: 3px; font-weight: bold; }
+        .btn-del { background: var(--danger); color: white; padding: 3px 6px; font-size: 0.6rem; border-radius: 3px; cursor: pointer; }
 
-        .total-box { font-size: 1.8rem; color: var(--success); font-weight: bold; margin-top: 20px; border-top: 2px solid #222; padding-top: 15px; display: flex; justify-content: space-between; }
-        
-        table { width: 100%; border-collapse: separate; border-spacing: 0 5px; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0 5px; margin-top: 20px; }
         th { color: var(--gold); padding: 15px; text-align: left; font-size: 0.7rem; border-bottom: 1px solid #333; }
         tr { background: rgba(255, 255, 255, 0.02); }
         td { padding: 12px; font-size: 0.75rem; }
+
+        .filter-btn { background: none; border: 1px solid #333; color: #666; cursor: pointer; padding: 6px 12px; font-size: 0.65rem; border-radius: 3px; margin-right: 5px; margin-bottom: 5px; }
+        .filter-btn.active { border-color: var(--gold); color: var(--gold); }
     </style>
 </head>
 <body>
 
 <div class="sidebar">
     <div class="logo-area"><h2>LEGON</h2><small style="color:#555">LEGATUS HONORIS</small></div>
-    
     <div class="nav-group">
         <div class="nav-label">MAIN TERMINAL</div>
         <div id="nav-aset" class="nav-item" onclick="showPage('aset')">💰 CEK ASET</div>
+        <div id="nav-denda" class="nav-item" onclick="showPage('denda')">📜 LIST DENDA</div>
         <div id="nav-dashboard" class="nav-item active" onclick="showPage('dashboard')">📊 DASHBOARD</div>
-        <div id="nav-handbook" class="nav-item" onclick="showPage('handbook')">📜 HANDBOOK</div>
     </div>
-    
     <button id="loginBtn" class="btn" style="margin-top:auto; font-size:0.6rem; background:#111; color:#444; border: 1px solid #222;" onclick="loginAdmin()">COMMANDER LOGIN</button>
 </div>
 
@@ -82,20 +81,23 @@
                     </select>
                 </div>
             </div>
-            <label>DETAIL LOG</label><textarea id="deskripsi"></textarea>
+            <label>LOG PELANGGARAN</label><textarea id="deskripsi" placeholder="Tulis detail di sini..."></textarea>
             <button class="btn btn-gold" onclick="saveData()">PUBLISH & COPY CODE</button>
         </div>
 
-        <div style="margin: 20px 0;">
-            <button onclick="renderDashboard('SEMUA')" style="background:none; border:1px solid var(--gold); color:var(--gold); cursor:pointer; padding:5px 10px; font-size:0.6rem;">SEMUA</button>
-            <button onclick="renderDashboard('ANGGOTA SP')" style="background:none; border:1px solid #333; color:#666; cursor:pointer; padding:5px 10px; font-size:0.6rem;">SP</button>
-            <button onclick="renderDashboard('DAFTAR PANTAU')" style="background:none; border:1px solid #333; color:#666; cursor:pointer; padding:5px 10px; font-size:0.6rem;">DAFTAR PANTAU</button>
-            <button onclick="renderDashboard('SANKSI ONGOING')" style="background:none; border:1px solid #333; color:#666; cursor:pointer; padding:5px 10px; font-size:0.6rem;">SANKSI</button>
-            <button onclick="renderDashboard('KASUS BERJALAN')" style="background:none; border:1px solid #333; color:#666; cursor:pointer; padding:5px 10px; font-size:0.6rem;">KASUS</button>
+        <div style="margin-top: 20px;">
+            <input type="text" id="searchInput" placeholder="CARI NAMA / KATEGORI..." onkeyup="filterSearch()" style="margin-bottom: 15px;">
+            <div id="filterContainer">
+                <button class="filter-btn active" onclick="renderDashboard('SEMUA', this)">SEMUA</button>
+                <button class="filter-btn" onclick="renderDashboard('ANGGOTA SP', this)">SP</button>
+                <button class="filter-btn" onclick="renderDashboard('DAFTAR PANTAU', this)">DAFTAR PANTAU</button>
+                <button class="filter-btn" onclick="renderDashboard('SANKSI ONGOING', this)">SANKSI</button>
+                <button class="filter-btn" onclick="renderDashboard('KASUS BERJALAN', this)">KASUS</button>
+            </div>
         </div>
 
         <table>
-            <thead><tr><th>TANGGAL</th><th>KAT</th><th>NAMA</th><th>LOG</th><th class="adm-cell" style="display:none;">AKSI</th></tr></thead>
+            <thead><tr><th>TANGGAL</th><th>KAT</th><th>NAMA</th><th>LOG</th><th id="admHead" style="display:none">AKSI</th></tr></thead>
             <tbody id="tBody"></tbody>
         </table>
     </div>
@@ -116,17 +118,19 @@
                 <div><label>GUDANG BANDARA</label><select class="gudang" onchange="hitungAset()"><option value="0">BUKA</option><option value="50000">BAYAR</option></select></div>
                 <div><label>GUDANG BASECAMP</label><select class="gudang" onchange="hitungAset()"><option value="0">BUKA</option><option value="50000">BAYAR</option></select></div>
                 <div><label>GUDANG KASTIL</label><select class="gudang" onchange="hitungAset()"><option value="0">BUKA</option><option value="50000">BAYAR</option></select></div>
-                <div><label>BIAYA PENDAMPINGAN PULAU</label><input type="number" id="aset_pulau" placeholder="0" oninput="hitungAset()"></div>
+                <div><label>BIAYA PENDAMPINGAN</label><input type="number" id="aset_pulau" placeholder="0" oninput="hitungAset()"></div>
             </div>
-            <div class="total-box"><span>TOTAL:</span><span>$<span id="aset_total">0</span></span></div>
-            <textarea id="aset_template" rows="10" readonly style="margin-top:20px; color:var(--success); font-size: 0.75rem;"></textarea>
-            <button class="btn btn-discord" onclick="copyAset()">📋 SALIN KE DISCORD</button>
+            <div class="total-box" style="font-size: 1.8rem; color: var(--success); display:flex; justify-content:space-between; border-top:1px solid #333; padding-top:15px;">
+                <span>TOTAL TAGIHAN:</span><span>$<span id="aset_total">0</span></span>
+            </div>
+            <textarea id="aset_template" rows="8" readonly style="margin-top:20px; color:var(--success); font-size:0.7rem;"></textarea>
+            <button class="btn btn-gold" style="background:#5865F2; color:white;" onclick="copyAset()">📋 SALIN KE DISCORD</button>
         </div>
     </div>
 
-    <div id="handbook" class="page">
-        <h1 style="font-family:'Oswald'; font-size: 2.5rem; margin:0;">LEGON HANDBOOK</h1>
-        <div class="card"><h3>01. KODE ETIK</h3><p>Jaga nama baik Legatus Honoris.</p></div>
+    <div id="denda" class="page">
+        <h1 style="font-family:'Oswald'; font-size: 2.5rem; margin:0;">LIST DENDA SENJATA</h1>
+        <div class="card" id="dendaList"></div>
     </div>
 
 </div>
@@ -135,11 +139,21 @@
     let MASTER_DATA = [{date: "24/02/2026", kat: "ANGGOTA SP", nama: "MICHAEL", det: "[SP 1] Pelanggaran Etika"}];
     let isCommander = false;
 
+    const DENDA_ITEMS = [
+        {w: "Taser, Nightstick, Pisau (WD)", p: "500.000"},
+        {w: "Glock", p: "1.500.000"},
+        {w: "AP Pistol", p: "2.000.000"},
+        {w: "Heavy Revolver - SMG", p: "3.000.000"},
+        {w: "Combat Pistol", p: "3.500.000"},
+        {w: "AUG - Carbine", p: "4.000.000"},
+        {w: "Vintage Pistol - Heavy Sniper", p: "5.000.000"}
+    ];
+
     function loginAdmin() {
         if(prompt("Commander Key:") === "legon2026") {
             isCommander = true;
             document.getElementById('adminPanel').style.display = 'block';
-            document.querySelectorAll('.adm-cell').forEach(el => el.style.display = 'table-cell');
+            document.getElementById('admHead').style.display = 'table-cell';
             document.getElementById('loginBtn').innerText = "KANG ESKRIM LOGGED IN";
             renderDashboard();
             alert("welcome to admin mode");
@@ -153,51 +167,12 @@
         document.getElementById('nav-' + pageId).classList.add('active');
     }
 
-    function hitungAset() {
-        let totalG = 0;
-        let rincian = "";
-        const selects = document.querySelectorAll('.gudang');
-        const labels = document.querySelectorAll('.asset-grid label');
-        
-        selects.forEach((s, i) => {
-            const val = parseInt(s.value);
-            totalG += val;
-            rincian += `> ${labels[i].innerText}: ${val > 0 ? 'BAYAR ($50.000)' : 'BUKA (FREE)'}\n`;
-        });
-
-        const pulau = parseInt(document.getElementById('aset_pulau').value) || 0;
-        const totalF = totalG + pulau;
-        document.getElementById('aset_total').innerText = totalF.toLocaleString('id-ID');
-        
-        const nama = document.getElementById('aset_nama').value || "---";
-        document.getElementById('aset_template').value = `**[ CEK ASET ANGGOTA RESIGN ]**\nNama: ${nama.toUpperCase()}\n----------------------------------\n**RINCIAN GUDANG:**\n${rincian}----------------------------------\n**PENDAMPINGAN:** $${pulau.toLocaleString('id-ID')}\n----------------------------------\n**TOTAL: $${totalF.toLocaleString('id-ID')}**\nStatus: WAJIB LUNAS SEBELUM RESIGN`;
-    }
-
-    function copyAset() {
-        document.getElementById('aset_template').select();
-        navigator.clipboard.writeText(document.getElementById('aset_template').value);
-        alert("data berhasil disalin, kirim ke mdt legon ya");
-    }
-
-    function saveData() {
-        const n = document.getElementById('nama').value.toUpperCase();
-        const k = document.getElementById('kategori').value;
-        const d = document.getElementById('deskripsi').value;
-        if(!n || !d) return alert("Lengkapi data!");
-        
-        let local = JSON.parse(localStorage.getItem('legon_temp')) || [];
-        local.push({ date: new Date().toLocaleDateString('id-ID'), kat: k, nama: n, det: d });
-        localStorage.setItem('legon_temp', JSON.stringify(local));
-        renderDashboard();
-        
-        const all = [...MASTER_DATA, ...local];
-        let code = all.map(i => `{date: "${i.date}", kat: "${i.kat}", nama: "${i.nama}", det: "${i.det}"}`).join(",\n");
-        navigator.clipboard.writeText(code + ",");
-        alert("data berhasil disalin, kirim ke mdt legon ya");
-    }
-
-    function renderDashboard(filter = 'SEMUA') {
-        const local = JSON.parse(localStorage.getItem('legon_temp')) || [];
+    function renderDashboard(filter = 'SEMUA', btn = null) {
+        if(btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        const local = JSON.parse(localStorage.getItem('legon_local')) || [];
         const combined = [...MASTER_DATA, ...local];
         const tbody = document.getElementById('tBody');
         tbody.innerHTML = '';
@@ -209,22 +184,67 @@
                     <td style="color:var(--gold)">${i.kat}</td>
                     <td><b>${i.nama}</b></td>
                     <td>${i.det}</td>
-                    <td class="adm-cell" style="display:${isCommander ? 'table-cell' : 'none'}">
-                        <button class="btn-del" onclick="deleteItem(${idx})">HAPUS</button>
+                    <td style="display:${isCommander ? 'table-cell' : 'none'}">
+                        <button class="btn-del" onclick="delItem(${idx})">X</button>
                     </td>
                 </tr>`;
             }
         });
     }
 
-    function deleteItem(idx) {
-        if(!confirm("Hapus data ini?")) return;
-        let local = JSON.parse(localStorage.getItem('legon_temp')) || [];
-        // Untuk sederhananya, hapus data lokal atau lapor ke GitHub
-        alert("Gunakan Copy Code untuk update permanen!");
-        saveData(); // trigger copy
+    function filterSearch() {
+        let val = document.getElementById('searchInput').value.toUpperCase();
+        let rows = document.getElementById('tBody').rows;
+        for (let row of rows) { row.style.display = row.innerText.toUpperCase().includes(val) ? "" : "none"; }
     }
 
+    function hitungAset() {
+        let gTotal = 0;
+        let rincian = "";
+        const selects = document.querySelectorAll('.gudang');
+        const labels = document.querySelectorAll('.asset-grid label');
+        selects.forEach((s, i) => {
+            let v = parseInt(s.value); gTotal += v;
+            rincian += `> ${labels[i].innerText}: ${v > 0 ? 'BAYAR ($50k)' : 'BUKA (FREE)'}\n`;
+        });
+        let p = parseInt(document.getElementById('aset_pulau').value) || 0;
+        let final = gTotal + p;
+        document.getElementById('aset_total').innerText = final.toLocaleString('id-ID');
+        document.getElementById('aset_template').value = `**[ CEK ASET ANGGOTA RESIGN ]**\nNama: ${document.getElementById('aset_nama').value.toUpperCase()}\n--------------------\n${rincian}--------------------\nTOTAL: $${final.toLocaleString('id-ID')}\nStatus: WAJIB LUNAS`;
+    }
+
+    function copyAset() {
+        document.getElementById('aset_template').select();
+        document.execCommand('copy');
+        alert("data berhasil disalin, kirim ke mdt legon ya");
+    }
+
+    function saveData() {
+        const n = document.getElementById('nama').value.toUpperCase();
+        const k = document.getElementById('kategori').value;
+        const d = document.getElementById('deskripsi').value;
+        if(!n || !d) return alert("Isi Data!");
+        let local = JSON.parse(localStorage.getItem('legon_local')) || [];
+        local.push({ date: new Date().toLocaleDateString('id-ID'), kat: k, nama: n, det: d });
+        localStorage.setItem('legon_local', JSON.stringify(local));
+        
+        let code = [...MASTER_DATA, ...local].map(i => `{date: "${i.date}", kat: "${i.kat}", nama: "${i.nama}", det: "${i.det}"}`).join(",\n");
+        navigator.clipboard.writeText(code + ",");
+        alert("data berhasil disalin, kirim ke mdt legon ya");
+        renderDashboard();
+    }
+
+    function delItem(idx) {
+        if(!confirm("Hapus?")) return;
+        let local = JSON.parse(localStorage.getItem('legon_local')) || [];
+        local.splice(idx - MASTER_DATA.length, 1);
+        localStorage.setItem('legon_local', JSON.stringify(local));
+        renderDashboard();
+    }
+
+    // Render List Denda
+    document.getElementById('dendaList').innerHTML = DENDA_ITEMS.map(i => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #222"><span style="color:var(--gold)">${i.w}</span><span style="color:var(--success)">$${i.p}</span></div>`).join('');
+    
     renderDashboard();
 </script>
 </body>
