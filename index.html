@@ -8,6 +8,7 @@
     <style>
         :root { --gold: #d4af37; --bg: #050505; --card: #111; --danger: #ff4444; --admin-bg: #2b0303; --success: #22c55e; }
         
+        /* Efek Monitor Cyberpunk (Klik Tembus) */
         body::before {
             content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
@@ -16,12 +17,7 @@
 
         body { font-family: 'JetBrains Mono', monospace; background: var(--bg); color: #e0e0e0; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        #mt-screen { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 9999; justify-content: center; align-items: center; text-align: center; 
-        }
-        .mt-box { border: 2px solid var(--danger); padding: 50px; background: rgba(255,0,0,0.05); box-shadow: 0 0 30px var(--danger); }
-
+        /* SIDEBAR NAVIGATION */
         .sidebar { 
             width: 280px; background: #000; border-right: 2px solid var(--gold); 
             padding: 20px; display: flex; flex-direction: column; z-index: 10000; 
@@ -35,29 +31,25 @@
         
         .content { flex-grow: 1; padding: 40px; overflow-y: auto; z-index: 1; }
         
+        /* ADMIN PANEL UI */
         #adminPanel { display: none; background: var(--admin-bg); padding: 25px; border-radius: 8px; margin-bottom: 35px; border: 1px solid var(--danger); }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         input, textarea, select { width: 100%; background: #000; border: 1px solid #333; color: var(--gold); padding: 12px; margin: 8px 0; border-radius: 4px; font-family: inherit; }
         
         .btn { padding: 12px; font-weight: 700; cursor: pointer; font-family: 'Oswald'; text-transform: uppercase; border: none; border-radius: 4px; transition: 0.3s; }
         .btn-save { background: var(--gold); color: #000; width: 100%; margin-bottom: 10px; }
-        .btn-mt { background: var(--danger); color: white; width: 100%; margin-bottom: 10px; }
         .btn-clear { background: #333; color: #999; width: 100%; font-size: 0.7rem; }
+        .btn-clear:hover { background: var(--danger); color: white; }
 
+        /* TABLE STYLING */
         table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
         th { color: var(--gold); padding: 15px; text-align: left; font-size: 0.75rem; border-bottom: 1px solid #333; }
-        tr { background: rgba(255, 255, 255, 0.02); }
-        td { padding: 15px; font-size: 0.8rem; }
+        tr { background: rgba(255, 255, 255, 0.02); transition: 0.3s; }
+        tr:hover { background: rgba(212, 175, 55, 0.05); }
+        td { padding: 15px; font-size: 0.8rem; border-top: 1px solid #222; border-bottom: 1px solid #222; }
     </style>
 </head>
 <body>
-
-<div id="mt-screen">
-    <div class="mt-box">
-        <h1 style="font-family:'Oswald'; color:var(--danger); font-size: 3rem; margin:0;">SYSTEM MAINTENANCE</h1>
-        <p style="letter-spacing: 2px; color: #fff;">SINKRONISASI DATA LEGATUS HONORIS</p>
-    </div>
-</div>
 
 <div class="sidebar">
     <div class="logo-area"><h2>LEGON</h2><small style="color:#555">LEGATUS HONORIS</small></div>
@@ -75,7 +67,7 @@
         <h2 style="font-family:'Oswald'; color:white; margin:0 0 15px 0;">INPUT DATA (ADMIN MODE)</h2>
         <div class="grid">
             <div>
-                <label>NAMA TARGET</label><input type="text" id="nama">
+                <label>NAMA TARGET</label><input type="text" id="nama" placeholder="Contoh: MICK">
                 <label>KATEGORI</label>
                 <select id="kategori">
                     <option>ANGGOTA SP</option>
@@ -85,15 +77,14 @@
                 </select>
             </div>
             <div>
-                <label>KETERANGAN / LOG</label><textarea id="deskripsi" rows="4"></textarea>
+                <label>KETERANGAN / LOG</label><textarea id="deskripsi" rows="4" placeholder="Detail pelanggaran atau status..."></textarea>
             </div>
         </div>
-        <button class="btn btn-save" onclick="saveData()">PUBLISH KE DASHBOARD</button>
-        <button class="btn btn-mt" id="mtBtn" onclick="toggleMaintenance()">AKTIFKAN MAINTENANCE</button>
+        <button class="btn btn-save" onclick="saveData()">PUBLISH KE DASHBOARD BROWSER</button>
         
         <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button class="btn" style="background:#2563eb; color:white; flex: 2; font-size: 0.7rem;" onclick="generateVSCode()">📋 COPY FOR VS CODE</button>
-            <button class="btn btn-clear" style="flex: 1;" onclick="clearLocalStorage()">🗑️ RESET</button>
+            <button class="btn" style="background:#2563eb; color:white; flex: 2; font-size: 0.7rem;" onclick="generateVSCode()">📋 COPY FOR VS CODE SINKRONISASI</button>
+            <button class="btn btn-clear" style="flex: 1;" onclick="clearLocalStorage()">🗑️ RESET DATA LOKAL</button>
         </div>
     </div>
 
@@ -105,36 +96,27 @@
 </div>
 
 <script>
-    // --- MASTER DATABASE ---
+    // --- DATABASE UTAMA (UBAH DISINI LALU UPLOAD KE GITHUB) ---
     const MASTER_DATA = [
         {date: "24/02/2026", kat: "ANGGOTA SP", nama: "MICHAEL", det: "Pelanggaran Etika Berat"},
     ];
+    // ---------------------------------------------------------
 
     let isAdmin = false;
 
-    function toggleMaintenance() {
-        let status = localStorage.getItem('legon_mt') === 'true';
-        localStorage.setItem('legon_mt', !status);
-        checkMT();
-    }
-
-    function checkMT() {
-        let status = localStorage.getItem('legon_mt') === 'true';
-        let screen = document.getElementById('mt-screen');
-        if(isAdmin) { screen.style.display = 'none'; } 
-        else { screen.style.display = status ? 'flex' : 'none'; }
-        document.getElementById('mtBtn').innerText = status ? "MATIKAN MAINTENANCE" : "AKTIFKAN MAINTENANCE";
-        document.getElementById('mtBtn').style.background = status ? "var(--success)" : "var(--danger)";
-    }
-
+    // Login Admin Mode
     function loginAdmin() {
-        if(prompt("Access Key:") === "legon2026") {
+        let pass = prompt("Access Key Legatus Honoris:");
+        if(pass === "legon2026") {
             isAdmin = true;
             document.getElementById('adminPanel').style.display = 'block';
-            checkMT();
+            alert("Commander Mode Active. Anda sekarang bisa input data.");
+        } else {
+            alert("Akses Ditolak.");
         }
     }
 
+    // Simpan data sementara ke browser
     function saveData() {
         const log = { 
             date: new Date().toLocaleDateString('id-ID'), 
@@ -142,43 +124,56 @@
             nama: document.getElementById('nama').value.toUpperCase(), 
             det: document.getElementById('deskripsi').value 
         };
-        if(!log.nama || !log.det) return alert("Data tidak lengkap!");
+        if(!log.nama || !log.det) return alert("Mohon lengkapi Nama dan Detail!");
+        
         let local = JSON.parse(localStorage.getItem('legon_temp')) || [];
         local.push(log);
         localStorage.setItem('legon_temp', JSON.stringify(local));
+        
         document.getElementById('nama').value = '';
         document.getElementById('deskripsi').value = '';
         render();
     }
 
+    // Render tabel data
     function render(filter = 'SEMUA') {
         document.getElementById('pageTitle').innerText = filter;
         const tbody = document.getElementById('tBody');
         tbody.innerHTML = '';
         const local = JSON.parse(localStorage.getItem('legon_temp')) || [];
         const combined = [...MASTER_DATA, ...local].reverse();
+
         combined.forEach(item => {
             if(filter === 'SEMUA' || item.kat === filter) {
-                tbody.innerHTML += `<tr><td>${item.date}</td><td style="color:var(--gold)">${item.kat}</td><td><b>${item.nama}</b></td><td>${item.det}</td></tr>`;
+                tbody.innerHTML += `<tr>
+                    <td style="color:#666">${item.date}</td>
+                    <td style="color:var(--gold)">${item.kat}</td>
+                    <td><b>${item.nama}</b></td>
+                    <td style="color:#aaa">${item.det}</td>
+                </tr>`;
             }
         });
     }
 
+    // Format data untuk dipaste ke VS Code
     function generateVSCode() {
         const local = JSON.parse(localStorage.getItem('legon_temp')) || [];
+        if(local.length === 0) return alert("Belum ada data baru untuk di-copy.");
         let code = local.map(item => `{date: "${item.date}", kat: "${item.kat}", nama: "${item.nama}", det: "${item.det}"}`).join(",\n");
         navigator.clipboard.writeText(code + ",");
-        alert("Kode Copied! Silakan tempel di VS Code MASTER_DATA.");
+        alert("DATA COPIED! Silakan paste ke MASTER_DATA di VS Code kamu.");
     }
 
+    // Hapus data sementara di browser
     function clearLocalStorage() {
-        if(confirm("Hapus input sementara?")) {
+        if(confirm("Hapus semua riwayat input di browser ini? Lakukan ini HANYA jika data sudah masuk ke VS Code!")) {
             localStorage.removeItem('legon_temp');
             render();
+            alert("Data lokal dibersihkan.");
         }
     }
 
-    checkMT();
+    // Inisialisasi awal
     render();
 </script>
 </body>
