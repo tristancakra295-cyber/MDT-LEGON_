@@ -56,6 +56,7 @@
         <div class="nav-label">TERMINAL DATA</div>
         <div id="nav-dashboard" class="nav-item active" onclick="showPage('dashboard')">📊 DASHBOARD</div>
         <div id="nav-aset" class="nav-item" onclick="showPage('aset')">💰 CEK ASET</div>
+        <div id="nav-pasal" class="nav-item" onclick="showPage('pasal')">📜 PASAL INTERNAL</div>
         <div id="nav-hukuman" class="nav-item" onclick="showPage('hukuman')">⚖️ HUKUMAN INTERNAL</div>
         <div id="nav-denda" class="nav-item" onclick="showPage('denda')">💰 DAFTAR DENDA</div>
     </div>
@@ -103,8 +104,27 @@
         </table>
     </div>
 
+    <div id="pasal" class="page">
+        <h1 style="font-family:'Bebas Neue'; font-size: 3.5rem; letter-spacing: 2px; margin:0; color: #fff;">PASAL ATURAN INTERNAL</h1>
+        <p style="color:#666; margin-bottom:30px;">Ketentuan Dasar Kedisiplinan Sheriff Kerajaan Roxwood</p>
+        <div class="card">
+            <h3 style="color:var(--gold); font-family:'Oswald'; border-bottom: 1px solid #222; padding-bottom:10px;">BAB I: KEDISIPLINAN UMUM</h3>
+            <div style="color:#888; line-height:2.2; font-size: 0.85rem;">
+                <b style="color:white">Pasal 1:</b> Setiap anggota wajib melengkapi KTA dan SIM aktif saat bertugas.<br>
+                <b style="color:white">Pasal 2:</b> Kewajiban mengikuti SOP Seragam dan atribut sesuai divisi masing-masing.<br>
+                <b style="color:white">Pasal 3:</b> Larangan menyalahgunakan persenjataan negara untuk kepentingan pribadi.<br>
+                <b style="color:white">Pasal 4:</b> Wajib menjaga etika dan kedisiplinan terhadap warga.
+            </div>
+            <h3 style="color:var(--gold); font-family:'Oswald'; border-bottom: 1px solid #222; padding-bottom:10px; margin-top:30px;">BAB II: OPERASIONAL</h3>
+            <div style="color:#888; line-height:2.2; font-size: 0.85rem;">
+                <b style="color:white">Pasal 5:</b> Dilarang bertugas di luar wilayah tanpa izin resmi.<br>
+                <b style="color:white">Pasal 6:</b> Larangan manipulasi laporan atau memberikan data palsu.
+            </div>
+        </div>
+    </div>
+
     <div id="hukuman" class="page">
-        <h1 style="font-family:'Bebas Neue'; font-size: 3.5rem; letter-spacing: 2px; margin:0; color: #fff;">PERATURAN INTERNAL</h1>
+        <h1 style="font-family:'Bebas Neue'; font-size: 3.5rem; letter-spacing: 2px; margin:0; color: #fff;">SANKSI & HUKUMAN</h1>
         <p style="color:#666; margin-bottom:30px;">Rancangan Peraturan Internal Sheriff Tahun 2025</p>
         <div class="card">
             <table>
@@ -142,11 +162,11 @@
         <div class="card">
             <h3 style="color:var(--gold); font-family:'Oswald'; border-bottom: 1px solid #222; padding-bottom:10px;">PROTOKOL WEWENANG</h3>
             <div style="color:#888; line-height:2.2; font-size: 0.85rem;">
-                [01] <b style="color:white">PENGAWASAN:</b> Memantau kinerja harian seluruh anggota Sheriff.<br>
-                [02] <b style="color:white">TEGURAN:</b> Memberikan peringatan lisan/tertulis atas pelanggaran ringan.<br>
-                [03] <b style="color:white">PEMERIKSAAN:</b> Melakukan investigasi mendalam terhadap personil bermasalah.<br>
-                [04] <b style="color:white">PERSIDANGAN:</b> Mengatur dan memimpin sidang internal untuk menentukan nasib personil.<br>
-                [05] <b style="color:white">EKSEKUSI:</b> Menetapkan sanksi akhir mulai dari SP1 hingga PTDH (Pemecatan).
+                [01] <b style="color:white">PENGAWASAN:</b> Memantau kinerja harian anggota Sheriff.<br>
+                [02] <b style="color:white">TEGURAN:</b> Memberikan peringatan lisan/tertulis.<br>
+                [03] <b style="color:white">PEMERIKSAAN:</b> Investigasi mendalam personil bermasalah.<br>
+                [04] <b style="color:white">PERSIDANGAN:</b> Memimpin sidang yudisial internal.<br>
+                [05] <b style="color:white">EKSEKUSI:</b> Menetapkan sanksi akhir SP1 hingga PTDH.
             </div>
         </div>
     </div>
@@ -163,36 +183,32 @@
     const GUDANGS = ["TIC", "INDUSTRI", "PALETO", "PUNCAK", "WT", "STARK GARAGE", "PANTAI", "KANPOL", "BANDARA", "BASECAMP", "KASTIL"];
     
     const INTERNAL_RULES = [
-        {no: 1, task: "TIDAK MELENGKAPI KELENGKAPAN ADMINISTRATIF", sanc: "TEGURAN LISAN & PEMBINAAN", denda: "$20.000 / TUGAS GAGAL", cls: "penalty-low"},
-        {no: 2, task: "PELANGGARAN SOP SERAGAM & PENAMPILAN", sanc: "TEGURAN LISAN & PEMBINAAN", denda: "-", cls: "penalty-low"},
-        {no: 3, task: "PELANGGARAN SOP PERSENJATAAN (TANPA PENYALAHGUNAAN)", sanc: "TEGURAN LISAN & PEMBINAAN", denda: "$20.000 / TUGAS GAGAL", cls: "penalty-low"},
-        {no: 4, task: "TIDAK RESPONSIF SAAT SITUASI MENDESAK", sanc: "TEGURAN LISAN & PEMBINAAN", denda: "-", cls: "penalty-low"},
-        {no: 5, task: "KURANG DISIPLIN / ATTITUDE BURUK", sanc: "TEGURAN LISAN & PEMBINAAN", denda: "-", cls: "penalty-low"},
-        {no: 6, task: "PENGGUNAAN KENDARAAN TIDAK SESUAI SOP", sanc: "TEGURAN LISAN & PEMBINAAN", denda: "$20.000 / TUGAS GAGAL", cls: "penalty-low"},
-        {no: 7, task: "MEMBANTAH PERINTAH SAH DARI KOMANDO", sanc: "TEGURAN LISAN/TERTULIS", denda: "-", cls: "penalty-mid"},
-        {no: 8, task: "BERTUGAS DI LUAR WILAYAH TANPA IZIN", sanc: "TEGURAN LISAN/TERTULIS", denda: "-", cls: "penalty-mid"},
-        {no: 9, task: "BERTINDAK SEWENANG-WENANG KEPADA WARGA", sanc: "TEGURAN LISAN/TERTULIS", denda: "-", cls: "penalty-mid"},
-        {no: 10, task: "KELALAIAN YANG MERUGIKAN WARGA", sanc: "TEGURAN LISAN/TERTULIS", denda: "-", cls: "penalty-mid"},
-        {no: 11, task: "MENYIMPAN BARANG DI LOKER TIDAK SESUAI SOP", sanc: "TEGURAN LISAN/TERTULIS", denda: "-", cls: "penalty-mid"},
-        {no: 12, task: "LAPORAN PALSU / MANIPULASI DATA", sanc: "TEGURAN LISAN/TERTULIS", denda: "-", cls: "penalty-mid"},
-        {no: 13, task: "KORUPSI / BARANG ILEGAL TANPA IZIN", sanc: "SIDANG ETIK - HUKUMAN MATI", denda: "-", cls: "penalty-high"},
-        {no: 14, task: "HILANG / JUAL BELI SENJATA NEGARA", sanc: "SIDANG ETIK - HUKUMAN MATI", denda: "$1.500k - $2.000k", cls: "penalty-high"},
+        {no: 1, task: "TIDAK MELENGKAPI KELENGKAPAN ADMINISTRATIF", sanc: "TEGURAN LISAN & PEMBINAAN", denda: "$20.000", cls: "penalty-low"},
+        {no: 2, task: "TIDAK MENGIKUTI SOP BERPAKAIAN", sanc: "TEGURAN LISAN & PEMBINAAN", denda: "-", cls: "penalty-low"},
+        {no: 3, task: "TIDAK MENGIKUTI SOP PERSENJATAAN", sanc: "TEGURAN LISAN & PEMBINAAN", denda: "$20.000", cls: "penalty-low"},
+        {no: 4, task: "TIDAK MEMENUHI KEBUTUHAN SAAT MENDESAK", sanc: "TEGURAN LISAN & PEMBINAAN", denda: "-", cls: "penalty-low"},
+        {no: 5, task: "KURANGNYA KEDISIPLINAN / ATTITUDE", sanc: "TEGURAN LISAN & PEMBINAAN", denda: "-", cls: "penalty-low"},
+        {no: 6, task: "KENDARAAN TIDAK SESUAI SOP", sanc: "TEGURAN LISAN & PEMBINAAN", denda: "$20.000", cls: "penalty-low"},
+        {no: 7, task: "TIDAK TAATI PERINTAH KOMANDO", sanc: "TEGURAN LISAN - TERTULIS", denda: "-", cls: "penalty-mid"},
+        {no: 8, task: "TUGAS LUAR WILAYAH TANPA IZIN", sanc: "TEGURAN LISAN - TERTULIS", denda: "-", cls: "penalty-mid"},
+        {no: 9, task: "SEWENANG-WENANG TERHADAP WARGA", sanc: "TEGURAN LISAN - TERTULIS", denda: "-", cls: "penalty-mid"},
+        {no: 10, task: "KELALAIAN YANG MERUGIKAN WARGA", sanc: "TEGURAN LISAN - TERTULIS", denda: "-", cls: "penalty-mid"},
+        {no: 11, task: "MENYIMPAN BARANG TIDAK SESUAI SOP", sanc: "TEGURAN LISAN - TERTULIS", denda: "-", cls: "penalty-mid"},
+        {no: 12, task: "LAPORAN PALSU / MANIPULASI DATA", sanc: "TEGURAN LISAN - TERTULIS", denda: "-", cls: "penalty-mid"},
+        {no: 13, task: "MENYIMPAN BARANG SITAAN TANPA IZIN", sanc: "SIDANG ETIK - HUKUMAN MATI", denda: "-", cls: "penalty-high"},
+        {no: 14, task: "MENGHILANGKAN / JUAL SENJATA NEGARA", sanc: "SIDANG ETIK - HUKUMAN MATI", denda: "$1.500k - $2.000k", cls: "penalty-high"},
         {no: 15, task: "BOCORKAN INFORMASI INTERNAL", sanc: "SIDANG ETIK - PTDH", denda: "-", cls: "penalty-high"},
         {no: 16, task: "PENYALAHGUNAAN JABATAN", sanc: "SIDANG ETIK - PTDH", denda: "-", cls: "penalty-high"},
-        {no: 17, task: "TERLIBAT TINDAK PIDANA / KRIMINAL", sanc: "SIDANG ETIK DAN PTDH", denda: "-", cls: "penalty-high"},
-        {no: 18, task: "PENYALAHGUNAAN SENJATA (BAHAYA)", sanc: "SIDANG ETIK - PTDH", denda: "-", cls: "penalty-high"},
-        {no: 19, task: "MENINGGALKAN TUGAS TANPA IZIN (DESERSI)", sanc: "SIDANG ETIK - PTDH", denda: "-", cls: "penalty-high"},
-        {no: 20, task: "MENURUNKAN KEHORMATAN INSTITUSI SHERIFF", sanc: "SIDANG ETIK - PTDH", denda: "-", cls: "penalty-high"}
+        {no: 17, task: "TERLIBAT TINDAK PIDANA", sanc: "SIDANG ETIK & PTDH", denda: "-", cls: "penalty-high"},
+        {no: 18, task: "MEMPERMAINKAN SENJATA NEGARA", sanc: "SIDANG ETIK - PTDH", denda: "-", cls: "penalty-high"},
+        {no: 19, task: "DESERSI / TINGGALKAN TUGAS", sanc: "SIDANG ETIK - PTDH", denda: "-", cls: "penalty-high"},
+        {no: 20, task: "TURUNKAN KEHORMATAN INSTITUSI", sanc: "SIDANG ETIK - PTDH", denda: "-", cls: "penalty-high"}
     ];
 
     const DENDA_SENJATA = [
-        {w: "Taser / Nightstick / Pisau", p: "500.000"},
-        {w: "Glock", p: "1.500.000"},
-        {w: "AP Pistol", p: "2.000.000"},
-        {w: "Heavy Revolver / SMG", p: "3.000.000"},
-        {w: "Combat Pistol", p: "3.500.000"},
-        {w: "AUG / Carbine", p: "4.000.000"},
-        {w: "Heavy Sniper", p: "5.000.000"}
+        {w: "Taser / Nightstick / Pisau", p: "500.000"}, {w: "Glock", p: "1.500.000"}, {w: "AP Pistol", p: "2.000.000"},
+        {w: "Heavy Revolver / SMG", p: "3.000.000"}, {w: "Combat Pistol", p: "3.500.000"},
+        {w: "AUG / Carbine", p: "4.000.000"}, {w: "Heavy Sniper", p: "5.000.000"}
     ];
 
     function loginAdmin() {
@@ -234,6 +250,7 @@
     function hitungAset() {
         let gt = 0; let rinc = "";
         const selects = document.querySelectorAll('.gudang');
+        const labels = document.querySelectorAll('.asset-grid label');
         selects.forEach((s, i) => {
             let v = parseInt(s.value); gt += v;
             if(v > 0) rinc += `> GUDANG ${GUDANGS[i]}: DIBAYAR\n`;
@@ -247,7 +264,7 @@
     function copyAset() {
         document.getElementById('aset_template').select();
         document.execCommand('copy');
-        alert("Laporan Disalin!");
+        alert("Template Laporan Disalin!");
     }
 
     function saveData() {
@@ -259,6 +276,7 @@
         local.push({ date: new Date().toLocaleDateString('id-ID'), kat: k, nama: n, det: d });
         localStorage.setItem('legon_local', JSON.stringify(local));
         renderDashboard();
+        alert("Log Operasional Tersimpan.");
     }
 
     function delItem(idx) {
@@ -271,15 +289,12 @@
 
     document.getElementById('penaltyBody').innerHTML = INTERNAL_RULES.map(rule => `
         <tr><td>${rule.no}</td><td class="${rule.cls}">${rule.task}</td><td>${rule.sanc}</td><td style="color:var(--danger)">${rule.denda}</td></tr>`).join('');
-
-    document.getElementById('gudangGrid').innerHTML = GUDANGS.map(g => `<div><label>GUDANG ${g}</label><select class="gudang" onchange="hitungAset()"><option value="0">DIBUKA (FREE)</option><option value="50000">DIBAYAR ($50k)</option></select></div>`).join('');
-    
+    document.getElementById('gudangGrid').innerHTML = GUDANGS.map(g => `<div><label>GUDANG ${g}</label><select class="gudang" onchange="hitungAset()"><option value="0">DIBUKA</option><option value="50000">DIBAYAR</option></select></div>`).join('');
     document.getElementById('dendaList').innerHTML = DENDA_SENJATA.map(i => `
         <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.03);">
             <span style="color: #aaa; font-size: 0.85rem; letter-spacing: 1px;">${i.w}</span>
             <span style="color: var(--success); font-family: 'Oswald'; font-size: 1.1rem; font-weight: 700;">$${i.p}</span>
         </div>`).join('');
-
     renderDashboard();
 </script>
 </body>
